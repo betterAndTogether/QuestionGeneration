@@ -4,6 +4,7 @@
 from utils.path_util import from_project_root
 from utils import json_util
 import numpy as np
+import random
 
 def question_generate(sentence, triplet, entity, wrong_answer):
     """
@@ -37,7 +38,7 @@ def generatorBytriplet(triplet2content, triplet):
     """
     content = triplet2content[triplet]
     triplet_units = triplet.split("#")
-    print(triplet_units)
+    # print(triplet_units)
     sentences = content.split("。")
     selected_sentences = []
     for sentence in sentences:
@@ -70,7 +71,28 @@ def generatorBytriplet(triplet2content, triplet):
         questions.append(question1)
         questions.append(question2)
 
+    # 随机打乱题目
+    questions = random_answers(questions)
     return questions
+
+def random_answers(questions):
+    """
+    :param questions: json格式
+    :return:
+    """
+    for q in questions:
+        tags = ["A", "B", "C", "D"]
+        random.shuffle(q["items"])
+        index = q['items'].index(q['correct'])
+        items = []
+        for i,it in enumerate(q["items"]):
+            items.append(tags[i]+": "+ it)
+        correct = tags[index]
+        q["correct"] = correct
+        q["items"] = items
+
+    return questions
+
 
 def generatorByEntity(triplet2content, entity):
     """
@@ -102,7 +124,7 @@ def main():
     # print(triplet2content.keys())
     # exit()
     # triplet = "红楼梦#作者#曹雪芹"
-    # triplet = "水浒传#创作年代#元末明初"
+    # # triplet = "水浒传#创作年代#元末明初"
     # questions = generatorBytriplet(triplet2content, triplet)
     # print(questions)
 
@@ -110,8 +132,6 @@ def main():
     questions = generatorByEntity(triplet2content, entity)
 
     print(questions)
-
-
 
 
 

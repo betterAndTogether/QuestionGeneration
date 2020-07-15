@@ -31,8 +31,8 @@ def triplet2content_fn(triplets_url, entity2contents_url, save_url):
     for line in triplet_file:
         triplet = line.strip().split(' ')
         entity1 = triplet[0]
-        relation = triplet[1]
-        entity2 = triplet[2]
+        relation = triplet[2]
+        entity2 = triplet[1]
         # print(entity1)
         # print(entity2)
         # print(entity2content[entity1])
@@ -51,7 +51,7 @@ def main():
         表示的是: key=知识点实体， value=素材文本
     """
     # 只保留原来实体 和 对应的句子
-    init_urls = ["名人.txt", "名著.txt", "地名.txt"]
+    init_urls = ["名人.txt", "名著.txt", "地名.txt", "名人2.txt", "景观.txt"]
     entity2contents_url = from_project_root("processed_data/entity2contents.json")
     abs_urls = [from_project_root("data/"+url) for url in init_urls]
     keepEntityAndSentences(abs_urls, entity2contents_url)
