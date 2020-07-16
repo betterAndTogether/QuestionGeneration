@@ -47,7 +47,7 @@ def generatorBytriplet(triplet2content, triplet):
             break
 
     if len(selected_sentences) == 0:
-        print("检索不到素材，请补充[{}]素材".format(triplet))
+        # print("检索不到素材，请补充[{}]素材".format(triplet))
         return []
 
     """
@@ -65,11 +65,13 @@ def generatorBytriplet(triplet2content, triplet):
 
     questions = []
     for sentence in selected_sentences:
-        question1 = question_generate(sentence, triplet_units, triplet_units[0], wrong_answer["entity1"])
-        question2 = question_generate(sentence, triplet_units, triplet_units[2], wrong_answer["entity2"])
+        if len(wrong_answer['entity1']) >= 3:
+            question1 = question_generate(sentence, triplet_units, triplet_units[0], wrong_answer["entity1"])
+            questions.append(question1)
 
-        questions.append(question1)
-        questions.append(question2)
+        if len(wrong_answer['entity2']) >= 3:
+            question2 = question_generate(sentence, triplet_units, triplet_units[2], wrong_answer["entity2"])
+            questions.append(question2)
 
     # 随机打乱题目
     questions = random_answers(questions)
@@ -109,9 +111,12 @@ def generatorByEntity(triplet2content, entity):
 
     questions = []
 
-    for triplet in related_triplet:
+    for i, triplet in enumerate(related_triplet):
         question = generatorBytriplet(triplet2content, triplet)
-        questions.extend(question)
+        if i == 0:
+            questions.extend(question)
+        elif len(question) == 2:
+            questions.append(question[1])
 
     return questions
 
@@ -123,16 +128,15 @@ def main():
     triplet2content = json_util.load(triplet2content_url)
     # print(triplet2content.keys())
     # exit()
-    # triplet = "红楼梦#作者#曹雪芹"
+    # triple
+    # t = "红楼梦#作者#曹雪芹"
     # # triplet = "水浒传#创作年代#元末明初"
     # questions = generatorBytriplet(triplet2content, triplet)
     # print(questions)
-
     entity = "红楼梦"
     questions = generatorByEntity(triplet2content, entity)
-
     print(questions)
-
+    print(len(questions))
 
 
 if __name__ == '__main__':
