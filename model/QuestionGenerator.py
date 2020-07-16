@@ -117,7 +117,6 @@ def generatorByEntity(triplet2content, entity):
             questions.extend(question)
         elif len(question) == 2:
             questions.append(question[1])
-
     return questions
 
 
