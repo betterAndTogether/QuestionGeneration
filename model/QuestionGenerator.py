@@ -92,9 +92,7 @@ def random_answers(questions):
         correct = tags[index]
         q["correct"] = correct
         q["items"] = items
-
     return questions
-
 
 def generatorByEntity(triplet2content, entity):
     """
@@ -119,24 +117,53 @@ def generatorByEntity(triplet2content, entity):
             questions.append(question[1])
     return questions
 
+def human_add_question(question_url, entity):
+    """
+    :param question_url:
+    :param entity:
+    :return:
+    """
+    human_questions = []
+
+    question_data = open(question_url, 'r', encoding="utf-8")
+    for line in question_data:
+        items = line.strip().split("#")
+        if items[0] == entity:
+            ques = {}
+            ques["question"] = items[1]
+            ques["correct"] = items[-1]
+            ques["items"] = []
+            keys = ["A", "B", "C", "D"]
+            for i in range(len(keys)):
+                ques["items"].append("{}: {}".format(keys[i], items[2+i]))
+            human_questions.append(ques)
+    return human_questions
+
+
+
 
 def main():
 
     # 加载数据
     triplet2content_url = from_project_root("processed_data/triplet2contents.csv")
     triplet2content = json_util.load(triplet2content_url)
+
     # print(triplet2content.keys())
+    # print(triplet2content["朱自清#职业#诗人"])
     # exit()
     # triple
-    # t = "红楼梦#作者#曹雪芹"
-    # # triplet = "水浒传#创作年代#元末明初"
+    # triplet = "水浒传#创作年代#元末明初"
     # questions = generatorBytriplet(triplet2content, triplet)
     # print(questions)
-    entity = "红楼梦"
-    questions = generatorByEntity(triplet2content, entity)
-    print(questions)
-    print(len(questions))
+    questions = []
+    entity = "水浒传"
+    model_questions = generatorByEntity(triplet2content, entity)
+    question_data_file = from_project_root("data/question.txt")
+    human_questions = human_add_question(question_data_file, entity)
+    questions.extend(model_questions)
+    questions.extend(human_questions)
 
+    return questions
 
 if __name__ == '__main__':
     main()
