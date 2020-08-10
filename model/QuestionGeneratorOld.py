@@ -92,7 +92,9 @@ def random_answers(questions):
         correct = tags[index]
         q["correct"] = correct
         q["items"] = items
+
     return questions
+
 
 def generatorByEntity(triplet2content, entity):
     """
@@ -115,60 +117,26 @@ def generatorByEntity(triplet2content, entity):
             questions.extend(question)
         elif len(question) == 2:
             questions.append(question[1])
+
     return questions
 
-def human_add_question(question_url, save_url):
-    """
-    :param question_url:
-    :param entity:
-    :return:
-    """
-    human_questions_json = {}
-    question_data = open(question_url, 'r', encoding="utf-8")
-    for line in question_data:
-        items = line.strip().split("#")
-        if items[0] not in human_questions_json.keys():
-            human_questions_json[items[0]] = []
-        ques = {}
-        ques["question"] = items[1]
-        ques["correct"] = items[-1]
-        ques["items"] = []
-        keys = ["A", "B", "C", "D"]
-        for i in range(len(keys)):
-            ques["items"].append("{}: {}".format(keys[i], items[2+i]))
-        human_questions_json[items[0]].append(ques)
-    json_util.dump(human_questions_json, save_url)
 
-
-
-
-def main(entity):
+def main():
 
     # 加载数据
     triplet2content_url = from_project_root("processed_data/triplet2contents.csv")
     triplet2content = json_util.load(triplet2content_url)
-
     # print(triplet2content.keys())
-    # print(triplet2content["朱自清#职业#诗人"])
     # exit()
     # triple
-    # triplet = "水浒传#创作年代#元末明初"
+    # t = "红楼梦#作者#曹雪芹"
+    # # triplet = "水浒传#创作年代#元末明初"
     # questions = generatorBytriplet(triplet2content, triplet)
     # print(questions)
-    questions = []
-    # entity = "红楼梦"
-    model_questions = generatorByEntity(triplet2content, entity)
-    question_data_file = from_project_root("processed_data/humanQuestion.json")
-    human_questions = json_util.load(question_data_file)
-    if entity in human_questions.keys():
-        questions.extend(human_questions[entity])
-    questions.extend(model_questions)
+    entity = "红楼梦"
+    questions = generatorByEntity(triplet2content, entity)
     print(questions)
     return questions
 
 if __name__ == '__main__':
-    question_data_file = from_project_root("data/question.txt")
-    save_url = from_project_root("processed_data/humanQuestion.json")
-    human_add_question(question_data_file, save_url)
-    entity = "红楼梦"
-    main(entity)
+    main()
